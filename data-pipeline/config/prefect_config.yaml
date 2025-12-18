@@ -1,0 +1,91 @@
+# Prefect Configuration for E-commerce Data Pipeline
+
+# Prefect Server Configuration
+server:
+  api_url: "http://localhost:4200/api"  # Local Prefect server
+  # api_url: "https://api.prefect.cloud/api/accounts/[ACCOUNT-ID]/workspaces/[WORKSPACE-ID]"  # Prefect Cloud
+
+# Flow Configuration
+flows:
+  # Data Generation Flow
+  data_generation:
+    name: "ecommerce_data_generation_flow"
+    description: "Generate synthetic e-commerce data"
+    tags: ["data-generation", "synthetic-data"]
+    retries: 2
+    retry_delay_seconds: 30
+    
+  # Data Ingestion Flow  
+  data_ingestion:
+    name: "ecommerce_data_ingestion_flow"
+    description: "Ingest data to S3 data lake"
+    tags: ["data-ingestion", "s3", "aws"]
+    retries: 3
+    retry_delay_seconds: 60
+    
+  # Data Processing Flow
+  data_processing:
+    name: "ecommerce_data_processing_flow"
+    description: "Process and clean raw data"
+    tags: ["data-processing", "etl", "data-quality"]
+    retries: 2
+    retry_delay_seconds: 45
+    
+  # Full Pipeline Flow
+  full_pipeline:
+    name: "ecommerce_full_pipeline"
+    description: "Complete end-to-end data pipeline"
+    tags: ["full-pipeline", "e2e"]
+    retries: 1
+    retry_delay_seconds: 120
+
+# Task Configuration
+tasks:
+  default_retries: 2
+  default_retry_delay_seconds: 30
+  timeout_seconds: 3600  # 1 hour
+
+# Deployment Configuration
+deployments:
+  schedule_type: "cron"  # Options: cron, interval, rrule
+  schedules:
+    daily_pipeline: "0 2 * * *"  # Run at 2 AM daily
+    hourly_ingestion: "0 * * * *"  # Run every hour
+    weekly_full_pipeline: "0 1 * * 0"  # Run at 1 AM every Sunday
+
+# Work Pool Configuration
+work_pools:
+  default_pool: "default-agent-pool"
+  
+# Storage Configuration
+storage:
+  type: "local"  # Options: local, s3, gcs, azure
+  base_path: "./prefect-storage"
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Notification Configuration
+notifications:
+  slack:
+    enabled: false
+    webhook_url: ""  # Set your Slack webhook URL
+    
+  email:
+    enabled: false
+    smtp_server: ""
+    smtp_port: 587
+    username: ""
+    password: ""
+    
+# Resource Limits
+resources:
+  cpu_limit: "2000m"  # 2 CPU cores
+  memory_limit: "4Gi"  # 4 GB RAM
+  
+# Environment Variables
+environment:
+  PYTHONPATH: "./src"
+  AWS_DEFAULT_REGION: "us-east-1"

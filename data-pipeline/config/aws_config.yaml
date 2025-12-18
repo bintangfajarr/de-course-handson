@@ -1,0 +1,35 @@
+# AWS Configuration for E-commerce Data Pipeline
+
+# S3 Data Lake Configuration
+s3_bucket_name: "ecommerce-data-lake-demo"
+aws_region: "us-east-1"
+
+# S3 Bucket Structure
+bucket_structure:
+  raw_data: "raw-data/"
+  processed_data: "processed-data/"
+  analytics_data: "analytics-data/"
+  backups: "backups/"
+
+# Data Partitioning Strategy
+partitioning:
+  by_date: true
+  date_format: "year=%Y/month=%m/day=%d"
+  
+# File Formats
+file_formats:
+  raw: ["parquet", "csv"]
+  processed: ["parquet"]
+  analytics: ["parquet", "json"]
+
+# Data Retention Policy (days)
+retention_policy:
+  raw_data: 365
+  processed_data: 730
+  analytics_data: 1095
+
+# Encryption and Security
+security:
+  encryption_at_rest: true
+  encryption_in_transit: true
+  access_logging: true
